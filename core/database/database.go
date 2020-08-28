@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var db *gorm.DB
+var DB *gorm.DB
 
 type Model struct {
 	ID int `gorm:"primary_key" json:"id"`
@@ -20,7 +20,7 @@ type Model struct {
 
 func DatabaseInit()  {
 	var err error
-	db, err = gorm.Open(config.DatabaseConfig.Type, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+	DB, err = gorm.Open(config.DatabaseConfig.Type, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		config.DatabaseConfig.User,
 		config.DatabaseConfig.Password,
 		config.DatabaseConfig.Host,
@@ -32,16 +32,16 @@ func DatabaseInit()  {
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return config.DatabaseConfig.TablePrefix + defaultTableName
 	}
-	db.SingularTable(true)
-	db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
-	db.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
-	db.Callback().Delete().Replace("gorm:delete", deleteCallback)
-	db.DB().SetMaxIdleConns(config.DatabaseConfig.MaxIdleConns)
-	db.DB().SetMaxOpenConns(config.DatabaseConfig.MaxOpenConns)
+	DB.SingularTable(true)
+	DB.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
+	DB.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
+	DB.Callback().Delete().Replace("gorm:delete", deleteCallback)
+	DB.DB().SetMaxIdleConns(config.DatabaseConfig.MaxIdleConns)
+	DB.DB().SetMaxOpenConns(config.DatabaseConfig.MaxOpenConns)
 }
 
 func CloseDB()  {
-	defer db.Close()
+	defer DB.Close()
 }
 
 /**
